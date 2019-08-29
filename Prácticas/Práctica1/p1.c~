@@ -1,0 +1,75 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+void PedirDatos(float *Y0, float *T0, float *h, float *tf);
+float Funcion(float T0,float Y0);
+void Diff_Solver(float Y_Array[],float T_Array[], float Y0, float T0, float H, float Tf,int *i);
+void ImprimirArch(float Y_Array[],float T_Array[],int Limite);
+void Graficar();
+
+int main (void)
+{
+  float Y0, T0, H, Tf, Y_Array[10000], T_Array[10000];
+  int Limite;
+  PedirDatos(&Y0,&T0,&H,&Tf);
+  Diff_Solver(Y_Array,T_Array,Y0,T0,H,Tf,&Limite);
+  ImprimirArch(Y_Array,T_Array,Limite);
+  system("gnuplot");
+  system("plot 'LTI.txt'");
+  return 0;
+}
+
+void PedirDatos(float *Y0, float *T0, float *H, float *Tf)
+{
+  printf("Introduzca los siguientes datos:\n\n");
+  printf("T0:\n");
+  scanf(" %f",T0);
+  printf("Y0 (y(T0)):\n");
+  scanf(" %f",Y0);
+  printf("H:\n");
+  scanf(" %f",H);
+  printf("Tf:\n");
+  scanf(" %f",Tf);  
+}
+
+float Funcion(float T0,float Y0)
+{
+  return T0+3*Y0;
+}
+void Diff_Solver(float Y_Array[],float T_Array[], float Y0, float T0, float H, float Tf,int *Limite)
+{
+  int i;
+  for(i=0; T0<=Tf; i++)
+    {
+      Y_Array[i] = Y0;
+      T_Array[i] = T0;
+      Y0 = Y0+H*(Funcion(T0,Y0));
+      T0 = H+T0;
+    }
+  *Limite=i;
+}
+void ImprimirArch(float Y_Array[],float T_Array[],int Limite)
+{
+  FILE *Archivo;
+  printf("Limite: %d\n",Limite);
+  Archivo = fopen("LTI.txt","wt");
+  for(int i=0; i<Limite; i++)
+    {
+      fprintf(Archivo,"%f, ",T_Array[i]);
+      fprintf(Archivo,"%f\n",Y_Array[i]);
+    }
+  fclose(Archivo);
+}
+void Graficar()
+{
+    int i;
+    char * configGnuplot[] = {"set title \"gXfer Método de Predición\"", 
+                                "set ylabel \"----Y--->\"",
+                                "set xlabel \"----T--->\"",
+                                "plot \"LTI.txt\" using 1:2 with lines"
+                               };
+    FILE * ventanaGnuplot = popen ("gnuplot -persist", "w");
+    for (i=0; i<4; i++)
+  fprintf(ventanaGnuplot, "%s \n", configGnuplot[i]);
+}
