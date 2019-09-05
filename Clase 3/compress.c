@@ -60,24 +60,27 @@ int main (int argc, char *argv[])
 
 void ComprimirDatos(char *argv[],int ContNum,int *Num)
 {
-  int Temp, Res=12; 
+  int Temp,Res=12;
+  char Verificar;
   for (int i=0; i<ContNum; i++)
-    {
+    {       
       sscanf(argv[i+1]," %d",&Temp);
-      if(Temp>=0 && Temp<=15)
+      if ((strcmp(argv[i+1],"0")==0) || (Temp>=1 && Temp<=15))
 	{
 	  //printf("%d, ",Temp);
 	  Temp <<= Res;
 	  *(Num)|=Temp;
 	  Res-=4;
-	  //printf("%d\n",*Num); 
+	  //printf("%d\n",*Num);
 	}
       else
 	{
-	  printf("Error, exceso de rango [Números aceptados: 0-15]\n");
+	  printf("Error, los valores de los datos son incorrectos [Números aceptados: 0 al 15]\n");
 	  exit(0);
 	}
     }
+  //__fpurge(stdin);
+  //getchar();
 }
 void ExtraerDatos(int ContNum,int Num,int Extract[])
 {
