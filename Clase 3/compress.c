@@ -6,6 +6,7 @@ void ComprimirDatos(char *argv[],int ContNum,int *Num);
 void ExtraerDatos(int ContNum,int Num,int Extract[]);
 void ImprimirDatos(int ContNum, int Extract[]);
 void Operaciones(int ContNum,int Extract[]);
+
 int main (int argc, char *argv[])
 {
   int Num=0,ContNum,Opcion=0,Extract[4];
@@ -80,6 +81,7 @@ void ComprimirDatos(char *argv[],int ContNum,int *Num)
   //__fpurge(stdin);
   //getchar();
 }
+
 void ExtraerDatos(int ContNum,int Num,int Extract[])
 {
   int Temp, Res=12;
@@ -100,6 +102,7 @@ void ExtraerDatos(int ContNum,int Num,int Extract[])
 	}
     }
 }
+
 void ImprimirDatos(int ContNum, int Extract[])
 {
   char Letra='A';
@@ -109,6 +112,7 @@ void ImprimirDatos(int ContNum, int Extract[])
       Letra+=1;
     }
 }
+
 void Operaciones(int ContNum,int Extract[])
 {
   float Resultado=Extract[0];

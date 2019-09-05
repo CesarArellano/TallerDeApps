@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 
-void PedirDatos(float *Y0, float *T0, float *h, float *tf);
+void PedirDatos(float *Y0, float *T0, float *H, float *tf);
 float Funcion(float T0,float Y0);
-void Diff_Solver(float Y_Array[],float T_Array[], float Y0, float T0, float H, float Tf,int *i);
+void Diff_Solver(float Y_Array[],float T_Array[], float Y0, float T0,float H ,float Tf,int *i);
 void ImprimirArch(float Y_Array[],float T_Array[],int Limite);
 void Graficar();
 
@@ -30,7 +31,7 @@ void Cargando (char Mensaje[])
 
 int main (void)
 {
-  float Y0, T0, H, Tf, Y_Array[100000], T_Array[100000];
+  float Y0,T0,H,Tf, Y_Array[100000], T_Array[100000];
   int Limite;
   PedirDatos(&Y0,&T0,&H,&Tf);
   Cargando("Resolviendo ecuación");
@@ -49,7 +50,7 @@ void PedirDatos(float *Y0, float *T0, float *H, float *Tf)
   scanf(" %f",T0);
   printf("Y0 (y(T0)): ");
   scanf(" %f",Y0);
-  printf("H: ");
+  printf("Avance (h):");
   scanf(" %f",H);
   printf("Tf: ");
   scanf(" %f",Tf);  
@@ -57,19 +58,19 @@ void PedirDatos(float *Y0, float *T0, float *H, float *Tf)
 
 float Funcion(float T0,float Y0)
 {
-  return T0-3*Y0;
+  return 1+(T0*sin(T0*Y0));
 }
-void Diff_Solver(float Y_Array[],float T_Array[], float Y0, float T0, float H, float Tf,int *Limite)
+void Diff_Solver(float Y_Array[],float T_Array[], float Y0, float T0,float H,float Tf,int *Limite)
 {
   int i;
   for(i=0; T0<=Tf; i++)
     {
       Y_Array[i] = Y0;
       T_Array[i] = T0;
-      Y0 = Y0+H*(Funcion(T0,Y0));
-      T0 = H+T0;
+      Y0 = Y0+H*(Funcion(T0,Y0));      
+      T0=H+T0;
     }
-  *Limite=i;
+  *Limite=i;  
 }
 void ImprimirArch(float Y_Array[],float T_Array[],int Limite)
 {
