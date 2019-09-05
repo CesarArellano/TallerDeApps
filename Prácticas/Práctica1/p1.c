@@ -30,7 +30,7 @@ void Cargando (char Mensaje[])
 
 int main (void)
 {
-  float Y0, T0, H, Tf, Y_Array[1000], T_Array[1000];
+  float Y0, T0, H, Tf, Y_Array[100000], T_Array[100000];
   int Limite;
   PedirDatos(&Y0,&T0,&H,&Tf);
   Cargando("Resolviendo ecuación");

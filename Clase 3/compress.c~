@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void ComprimirDatos(char *argv[],int ContNum,int *Num);
+void ExtraerDatos(int ContNum,int Num,int Extract[]);
+void ImprimirDatos(int ContNum, int Extract[]);
+void Operaciones(int ContNum,int Extract[]);
+int main (int argc, char *argv[])
+{
+  int Num=0,ContNum,Extract[4];
+  ContNum = argc-1;
+  if(argc > 5 || argc == 1)
+    {
+      printf("Los parámetros no son los adecuados\n");
+      exit(0);
+    }
+  else
+    {
+      ComprimirDatos(argv,ContNum,&Num);
+      ExtraerDatos(ContNum,Num,Extract);
+	}
+}  
+
+void ComprimirDatos(char *argv[],int ContNum,int *Num)
+{
+  int Temp, Res=12; 
+  for (int i=0; i<ContNum; i++)
+	{
+	  sscanf(argv[i+1]," %d",&Temp);
+	  if(Temp>=0 && Temp<=15)
+	  {
+	  printf("%d, ",Temp);
+	  Temp <<= Res;
+	  *(Num)|=Temp;
+	  Res-=4;
+	  printf("%d\n",*Num); 
+	  }
+	  else
+	  {
+	  	printf("Error, exceso de rango de números permitidos [Números aceptados: 0-15]\n");
+	  	exit(0);
+	  }
+	}
+}
+void ExtraerDatos(int ContNum,int Num,int Extract[])
+{
+	int Temp, Res=12;
+	char Letra='A';
+
+  for (int i=0; i<ContNum; i++)
+	{
+	  if(i==0)
+	    {
+	      Temp=Num;
+	      Extract[i] = Temp >> Res;
+	    }
+	  else
+	    {
+	      Temp = Extract[i-1] << Res;
+	      Num = Num ^ Temp;
+	      Temp = Num;
+	      Res-=4;
+	      Extract[i]=Temp>>Res;
+	    }
+	  printf("Número en %c es: %d\n",Letra,Extract[i]);
+	  Letra+=1;
+	}
+}
+void ImprimirDatos(int ContNum, int Extract[])
+{
+  printf("Hola");
+}
+void Operaciones(int ContNum,int Extract[])
+{
+  printf("Hola");
+}
