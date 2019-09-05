@@ -47,8 +47,7 @@ int main (int argc, char *argv[])
 	      break;
 	    default:
 	      printf("Opción invalida, intente de nuevo\n");
-	      break;
-	      
+	      break;	      
 	    }
 	  printf("Presione Enter para continuar...\n");
 	  __fpurge(stdin);
@@ -61,7 +60,6 @@ int main (int argc, char *argv[])
 void ComprimirDatos(char *argv[],int ContNum,int *Num)
 {
   int Temp,Res=12;
-  char Verificar;
   for (int i=0; i<ContNum; i++)
     {       
       sscanf(argv[i+1]," %d",&Temp);
