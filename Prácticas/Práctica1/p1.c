@@ -58,7 +58,7 @@ void PedirDatos(float *Y0, float *T0, float *H, float *Tf)
 
 float Funcion(float T0,float Y0)
 {
-  return 1+(T0*sin(T0*Y0));
+  return T0+Y0;
 }
 void Diff_Solver(float Y_Array[],float T_Array[], float Y0, float T0,float H,float Tf,int *Limite)
 {
