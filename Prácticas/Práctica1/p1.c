@@ -3,11 +3,108 @@
 #include <stdlib.h>
 #include <math.h>
 
-void PedirDatos(float *Y0, float *T0, float *H, float *tf);
-float Funcion(float T0,float Y0);
-void Diff_Solver(float Y_Array[],float T_Array[], float Y0, float T0,float H ,float Tf,int *i);
-void ImprimirArch(float Y_Array[],float T_Array[],int Limite);
+typedef struct def_Coordenada
+{
+  double Y,T;
+  struct def_Coordenada *Sig;
+} TipoCoordenada;
+
+void PedirDatos(double *T0, double *Y0, double *H, double *Tf);
+double Funcion(double T0, double Y0);
+void DiffSolver(TipoCoordenada **Inicio, double T0, double Y0, double H , double Tf);
+void AgregarNodo(TipoCoordenada **Inicio, double T0, double Y0);
+void ImprimirArch(TipoCoordenada *Inicio);
 void Graficar();
+void Cargando(char Mensaje[]);
+void BorrarLista(TipoCoordenada *Inicio);
+
+int main (void)
+{
+  double Y0,T0,H,Tf;
+  TipoCoordenada *Inicio = NULL;
+  PedirDatos(&T0,&Y0,&H,&Tf);
+  Cargando("Resolviendo ecuación");
+  DiffSolver(&Inicio,T0,Y0,H,Tf);
+  Cargando("Imprimiendo datos en archivo");
+  ImprimirArch(Inicio);
+  Cargando("Graficando con GNUPlot");
+  Graficar();
+  BorrarLista (Inicio);
+  return 0;
+}
+
+void PedirDatos(double *T0, double *Y0, double *H, double *Tf)
+{
+  printf("Introduzca los siguientes datos:\n");
+  printf("T0: ");
+  scanf(" %lf",T0);
+  printf("Y0 (y(T0)): ");
+  scanf(" %lf",Y0);
+  printf("Avance (h):");
+  scanf(" %lf",H);
+  printf("Tf: ");
+  scanf(" %lf",Tf);  
+}
+
+double Funcion(double T0, double Y0)
+{
+  return T0+Y0;
+}
+
+void DiffSolver(TipoCoordenada **Inicio, double T0, double Y0, double H , double Tf)
+{
+  for(; T0 <= Tf; T0 += H)
+    {
+      AgregarNodo(Inicio,T0,Y0);      
+      Y0 = Y0+H*(Funcion(T0,Y0));     
+    }
+}
+
+void AgregarNodo(TipoCoordenada **Inicio, double T0, double Y0)
+{
+  TipoCoordenada *Temp, *Temp2;
+  Temp = (TipoCoordenada *) malloc (sizeof (TipoCoordenada));
+  Temp -> Y = Y0;
+  Temp -> T = T0; 
+  Temp -> Sig = NULL;
+  if (*Inicio != NULL)
+    {
+      Temp2 = *Inicio;
+      while (Temp2 -> Sig != NULL)
+	Temp2 = Temp2 -> Sig;
+      Temp2 -> Sig = Temp;
+    }
+  else
+    *Inicio = Temp;
+  
+}
+
+void ImprimirArch(TipoCoordenada *Inicio)
+{
+  FILE *Archivo;
+  Archivo = fopen("LTI.txt","wt");
+  TipoCoordenada *Temp;
+  Temp = Inicio;
+  while (Temp != NULL)
+    {
+      fprintf(Archivo,"%lf %lf\n",Temp -> T, Temp -> Y); 
+      Temp = Temp -> Sig;
+    }
+  fclose(Archivo);
+}
+
+void Graficar()
+{
+  int i;
+  char *AbrirGnuPlot[] = {"set title \"Método de Predición / Euler\"", 
+			  "set ylabel \"----Y--->\"",
+			  "set xlabel \"----T--->\"",
+			  "plot \"LTI.txt\" with lines"
+  };
+  FILE *VentanaGnuPlot = popen ("gnuplot -persist", "w");
+  for (i=0; i<4; i++)
+    fprintf(VentanaGnuPlot, "%s \n", AbrirGnuPlot[i]);
+}
 
 void Cargando (char Mensaje[])
 {
@@ -29,67 +126,13 @@ void Cargando (char Mensaje[])
   system ("sleep 0.15");
 }
 
-int main (void)
+void BorrarLista (TipoCoordenada *Inicio)
 {
-  float Y0,T0,H,Tf, Y_Array[100000], T_Array[100000];
-  int Limite;
-  PedirDatos(&Y0,&T0,&H,&Tf);
-  Cargando("Resolviendo ecuación");
-  Diff_Solver(Y_Array,T_Array,Y0,T0,H,Tf,&Limite);
-  Cargando("Imprimiendo datos en archivo");
-  ImprimirArch(Y_Array,T_Array,Limite);
-  Cargando("Graficando con GNUPlot");
-  Graficar();
-  return 0;
-}
-
-void PedirDatos(float *Y0, float *T0, float *H, float *Tf)
-{
-  printf("Introduzca los siguientes datos:\n");
-  printf("T0: ");
-  scanf(" %f",T0);
-  printf("Y0 (y(T0)): ");
-  scanf(" %f",Y0);
-  printf("Avance (h):");
-  scanf(" %f",H);
-  printf("Tf: ");
-  scanf(" %f",Tf);  
-}
-
-float Funcion(float T0,float Y0)
-{
-  return T0+Y0;
-}
-void Diff_Solver(float Y_Array[],float T_Array[], float Y0, float T0,float H,float Tf,int *Limite)
-{
-  int i;
-  for(i=0; T0<=Tf; i++)
+  TipoCoordenada *Temp;
+  while (Inicio != NULL)
     {
-      Y_Array[i] = Y0;
-      T_Array[i] = T0;
-      Y0 = Y0+H*(Funcion(T0,Y0));      
-      T0=H+T0;
+      Temp = Inicio;
+      Inicio = Inicio -> Sig;
+      free (Temp);
     }
-  *Limite=i;  
-}
-void ImprimirArch(float Y_Array[],float T_Array[],int Limite)
-{
-  FILE *Archivo;
-  //printf("Limite: %d\n",Limite);
-  Archivo = fopen("LTI.txt","wt");
-  for(int i=0; i<Limite; i++)
-      fprintf(Archivo,"%f %f\n",T_Array[i], Y_Array[i]);
-  fclose(Archivo);
-}
-void Graficar()
-{
-  int i;
-  char *AbrirGnuPlot[] = {"set title \"Método de Predición / Euler\"", 
-			    "set ylabel \"----Y--->\"",
-			    "set xlabel \"----T--->\"",
-			    "plot \"LTI.txt\" with lines"
-  };
-  FILE *VentanaGnuPlot = popen ("gnuplot -persist", "w");
-  for (i=0; i<4; i++)
-    fprintf(VentanaGnuPlot, "%s \n", AbrirGnuPlot[i]);
 }
