@@ -43,7 +43,7 @@ void PedirDatos(double *T0, double *Y0, double *H, double *Tf)
   printf("Avance (h):");
   scanf(" %lf",H);
   printf("Tf: ");
-  scanf(" %lf",Tf);  
+  scanf(" %lf",Tf);
 }
 
 double Funcion(double T0, double Y0)
@@ -55,8 +55,8 @@ void DiffSolver(TipoCoordenada **Inicio, double T0, double Y0, double H , double
 {
   for(; T0 <= Tf; T0 += H)
     {
-      AgregarNodo(Inicio,T0,Y0);      
-      Y0 = Y0+H*(Funcion(T0,Y0));     
+      AgregarNodo(Inicio,T0,Y0);
+      Y0 = Y0+H*(Funcion(T0,Y0));
     }
 }
 
@@ -65,7 +65,7 @@ void AgregarNodo(TipoCoordenada **Inicio, double T0, double Y0)
   TipoCoordenada *Temp, *Temp2;
   Temp = (TipoCoordenada *) malloc (sizeof (TipoCoordenada));
   Temp -> Y = Y0;
-  Temp -> T = T0; 
+  Temp -> T = T0;
   Temp -> Sig = NULL;
   if (*Inicio != NULL)
     {
@@ -76,7 +76,7 @@ void AgregarNodo(TipoCoordenada **Inicio, double T0, double Y0)
     }
   else
     *Inicio = Temp;
-  
+
 }
 
 void ImprimirArch(TipoCoordenada *Inicio)
@@ -87,7 +87,7 @@ void ImprimirArch(TipoCoordenada *Inicio)
   Temp = Inicio;
   while (Temp != NULL)
     {
-      fprintf(Archivo,"%lf %lf\n",Temp -> T, Temp -> Y); 
+      fprintf(Archivo,"%lf %lf\n",Temp -> T, Temp -> Y);
       Temp = Temp -> Sig;
     }
   fclose(Archivo);
@@ -96,7 +96,7 @@ void ImprimirArch(TipoCoordenada *Inicio)
 void Graficar()
 {
   int i;
-  char *AbrirGnuPlot[] = {"set title \"Método de Predición / Euler\"", 
+  char *AbrirGnuPlot[] = {"set title \"Método de Predición / Euler\"",
 			  "set ylabel \"----Y--->\"",
 			  "set xlabel \"----T--->\"",
 			  "plot \"LTI.txt\" with lines"
