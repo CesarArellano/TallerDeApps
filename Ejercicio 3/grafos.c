@@ -84,6 +84,7 @@ void AgregarNodo(TipoGrafo **PrimerGrafo, char *Letra, int Max)
     {
       do
     	{
+	  Anterior = NULL;
 	  printf("¿A dónde deseas conectar el nodo?\n");
 	  Flag = scanf(" %c",&BuscarID);
 	  if(Flag)
@@ -111,6 +112,8 @@ void AgregarAristas(TipoGrafo **PrimerGrafo, int Max)
   TipoGrafo *Origen, *Destino;
   char IDOrigen, IDDestino;
   int Flag=1;
+  Origen = NULL;
+  Destino = NULL;
   printf("Ingresa el ID origen\n");
   scanf(" %c",&IDOrigen);
   BuscarNodo(*PrimerGrafo, 0, Max,IDOrigen,&Origen);
@@ -148,7 +151,6 @@ void AgregarAristas(TipoGrafo **PrimerGrafo, int Max)
 
 void BuscarNodo (TipoGrafo *PrimerGrafo, int i, int Max, char BuscarID, TipoGrafo **UbicacionNodo)
 {
-  (*UbicacionNodo) == NULL;
   if (PrimerGrafo -> ID != BuscarID)
     {
       while (i < Max)
@@ -177,9 +179,10 @@ void DesplegarGrafo(TipoGrafo *PrimerGrafo, int i, int Max)
 }
 void BuscarDato(TipoGrafo *PrimerGrafo, int Max)
 {
-  TipoGrafo *Destino = NULL;
+  TipoGrafo *Destino;
   char BuscarID;
   int Flag=1;
+  Destino = NULL;
   printf("Ingresa el ID a buscar\n");
   scanf(" %c",&BuscarID);
   BuscarNodo(PrimerGrafo, 0, Max, BuscarID, &Destino);
