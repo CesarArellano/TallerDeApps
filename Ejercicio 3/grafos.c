@@ -9,6 +9,12 @@ typedef struct def_Grafo
   struct def_Grafo **Aristas;
 }TipoGrafo;
 
+typedef struct def_Conteo
+{
+	char Vertex,PreviousVertex;
+	int SDF; 
+}TipoConteo;
+
 void AgregarNodo(TipoGrafo **PrimerGrafo, char *Letra, int Max);
 void BuscarNodo(TipoGrafo *PrimerGrafo, int i, int Max, char BuscarID, TipoGrafo **UbicacionNodo);
 void AgregarAristas(TipoGrafo **PrimerGrafo, int Max);
@@ -19,6 +25,7 @@ void BorrarLista(TipoGrafo *PrimerGrafo,int i, int Max);
 int main (void)
 {
   TipoGrafo *PrimerGrafo = NULL;
+	TipoConteo Tabla[10];
   char Letra='a',ID;
   int ConexMax,Opcion;
   printf("Ingrese el máximo de conexiones\n");
