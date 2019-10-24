@@ -10,9 +10,9 @@ typedef struct def_Coordenada
 } TipoCoordenada;
 
 typedef enum defErrores
-{
-  NoHayError, Lectura, Argumento
-}Errores;
+  {
+   NoHayError, Lectura, Argumento
+  } Errores;
 
 void PedirDatos(double T0[], double Y0[], double *Alfa, double *H, double *Tf, int Orden, Errores Error[],int *Cant);
 void VerificarErrores(Errores Error[],int Cant);
@@ -27,7 +27,7 @@ void BorrarLista(TipoCoordenada *Inicio);
 int main (int argc, char *argv[])
 {
   int Orden,Cant;
-  double Y0[10],Alfa[10],T0,H,Tf;
+  double Y0[100],Alfa[100],T0,H,Tf;
   Errores Error[100];
   Error [0] = argc + 1;
   VerificarErrores(Error, 0);
@@ -56,32 +56,32 @@ void PedirDatos(double T0[], double Y0[], double *Alfa, double *H, double *Tf, i
   printf("Tf: \n");
   Error[2] = scanf(" %lf",Tf);
   for (i = 0; i < Orden; i++)
-  {
-    printf("y^[%d](T0) = Y^[%d]0: \n", i, i);
-    Error[j] = scanf(" %lf", &Y0[i]);
-    j++;
-    printf("α[%d]:\n", i);
-    Error[j] = scanf(" %lf", &Alfa[i]);
-    j++;
-  }
+    {
+      printf("y^[%d](T0) = Y^[%d]0: \n", i, i);
+      Error[j] = scanf(" %lf", &Y0[i]);
+      j++;
+      printf("α[%d]:\n", i);
+      Error[j] = scanf(" %lf", &Alfa[i]);
+      j++;
+    }
   *Cant = j-1;
 }
 
 void VerificarErrores(Errores Error[],int Cant)
 {
   for(int i=0; i<=Cant;i++)
-  {
-    if(Error[i] ==0)
     {
-      printf("Error en uno o más datos ingresados\n");
-      exit(1);
+      if(Error[i] ==0)
+	{
+	  printf("Error en uno o más datos ingresados\n");
+	  exit(1);
+	}
+      if(Error[i] == 2 || Error[i] >= 4)
+	{
+	  printf ("Ingresó una cantidad de argumentos incorrecta\n");
+	  exit (2);
+	}
     }
-    if(Error[i] == 2 || Error[i] >= 4)
-    {
-      printf ("Ingresó una cantidad de argumentos incorrecta\n");
-      exit (2);
-    }
-  }
 }
 
 double Funcion(double T0, double Y0)
@@ -95,32 +95,25 @@ double Funcion(double T0, double Y0)
 
 void DiffSolver(TipoCoordenada **Inicio, double T0, double Y0[], double Alfa[], double H , double Tf, int Orden)
 {
-  double U[10],Acum;
+  double U[100],Acum;
   int i,j;
   AgregarNodo(Inicio,T0,Y0,Orden);
   for(T0 += H; T0 <= Tf; T0 += H)
     {
-    	Acum=0;
-    	j = Orden - 1;
-    	for(i = 0; i < Orden; i++)
+      Acum=0;
+      j = Orden - 1;
+      for(i = 0; i < Orden; i++)
     	{
-    		Acum += -Y0[i]*Alfa[j];
-    		if(Orden != i+1)
-    			//U[i] = Y0[i+1];
-          U[i] = Y0[i+1] * H;
-    		else
-    		{
-    			U[i] = Acum + H*(Funcion(T0-H, Y0[i - 1]));
-    			AgregarNodo(Inicio,T0,U,Orden);
-    			//printf("U3: %f\n",U[i]);
-    			//__fpurge(stdin);
-	   			//getchar();
-    		}
-    		Y0[i] = U[i];
-    		j--;
-    		//printf("Acumulador: %f\n",Acum);
-    		//__fpurge(stdin);
-    		//getchar();
+	  Acum += -Y0[i]*Alfa[j];
+	  if(Orden != i+1)
+	    U[i] = Y0[i+1] * H;
+	  else
+	    {
+	      U[i] = Acum + H*(Funcion(T0-H, Y0[i - 1]));
+	      AgregarNodo(Inicio,T0,U,Orden);
+	    }
+	  Y0[i] = U[i];
+	  j--;
     	}
     }
 }
@@ -153,11 +146,11 @@ void ImprimirArch(TipoCoordenada *Inicio, int Orden)
   Temp = Inicio;
   while (Temp != NULL)
     {
-    	fprintf(Archivo,"%f ",Temp -> T);
-    	for(i=0;i<(Orden-1);i++)
-    		fprintf(Archivo,"%f ", Temp -> Y[i]);
-    	fprintf(Archivo,"%f\n",Temp -> Y[i]);
-    	Temp = Temp -> Sig;
+      fprintf(Archivo,"%f ",Temp -> T);
+      for(i=0;i<(Orden-1);i++)
+	fprintf(Archivo,"%f ", Temp -> Y[i]);
+      fprintf(Archivo,"%f\n",Temp -> Y[i]);
+      Temp = Temp -> Sig;
     }
   fclose(Archivo);
 }
