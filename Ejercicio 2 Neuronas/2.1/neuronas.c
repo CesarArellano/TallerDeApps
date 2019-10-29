@@ -10,8 +10,8 @@ typedef struct Neuron
 }TipoNeurona;
 
 void InicializarNeuronas(TipoNeurona *AND);
-void Entrenamiento(TipoNeurona* Neurona, int Entradas[4][2], int Salidas[], char NombreArchivo[]);
-double ObtenerForwardPass(TipoNeurona *AND, int EntradasX[]);
+void Entrenamiento(TipoNeurona* Neurona, double Entradas[4][2], double Salidas[], char NombreArchivo[]);
+double ObtenerForwardPass(TipoNeurona *AND, double EntradasX[]);
 void ResultadosAND(TipoNeurona *AND);
 void ResultadosOR(TipoNeurona *OR);
 void ResultadosNOT(TipoNeurona *NOT);
@@ -21,11 +21,11 @@ int main (void)
 {
   TipoNeurona NeuronaAND,NeuronaOR,NeuronaNOT,NeuronaXOR;
   int Opcion;
-  int EntradasAND_OR_XOR[4][2] = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
-  int SalidasAND[4] = {-1, -1, -1, 1};
-  int SalidasOR[4] = {-1, 1, 1, 1}; 
-  int EntradasNOT[4] = {-1, 1, 0, 0};
-  int SalidadNOT[4] = {1, -1, 0, 0};
+  double EntradasAND_OR_XOR[6][2] = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1},{2,2},{3,3}};
+  double SalidasAND[6] = {-1, -1, -1, 1, 1,1};
+  double SalidasOR[4] = {-1, 1, 1, 1}; 
+  double EntradasNOT[2] = {-1, 1};
+  double SalidadNOT[2] = {1, -1};
     
   InicializarNeuronas(&NeuronaAND);
   Entrenamiento(&NeuronaAND,EntradasAND_OR_XOR,SalidasAND,"NeuronaAND.txt");
@@ -75,26 +75,25 @@ void InicializarNeuronas(TipoNeurona *AND)
   AND->W[1] = drand48();
   AND->Bias = drand48();
 }
-void Entrenamiento(TipoNeurona* Neurona, int Entradas[4][2], int Salidas[], char NombreArchivo[])
+void Entrenamiento(TipoNeurona* Neurona, double Entradas[4][2], double Salidas[], char NombreArchivo[])
 {
   FILE *Archivo;
   Archivo = fopen(NombreArchivo, "wt");
-  double N = 1;
+  double N = 0.01;
   int Posicion = 0;
 
-  for(int i = 0; i < 100; i++)
+  for(int i = 0; i < 500; i++)
     {
-      if(Posicion == 4)
-        Posicion = 0;   
+      if(Posicion == 6)
+        Posicion = 0; 
 
-      Neurona->Error = ObtenerForwardPass(Neurona,Entradas[Posicion]) - Salidas[Posicion];
-      //printf("Forward: %lf, Error: %lf\n",ObtenerForwardPass(Neurona,Entradas[Posicion]),Neurona->Error);
+      Neurona->Error = Salidas[Posicion] - ObtenerForwardPass(Neurona,Entradas[Posicion]);
       
       for(int j = 0 ; j < 2;j++)
         Neurona->W[j] += N * Neurona->Error; 
 
       Neurona->Bias += Neurona->Error * N;
-      fprintf(Archivo, "%lf, %lf, %lf, %lf\n", Neurona->W[0],Neurona->W[1],Neurona->Bias,Neurona->Error);
+      fprintf(Archivo, "%lf, %lf\n", Neurona->W[0],Neurona->Error);
       Posicion++;
     }   
 
@@ -103,33 +102,34 @@ void Entrenamiento(TipoNeurona* Neurona, int Entradas[4][2], int Salidas[], char
 
 void ResultadosAND(TipoNeurona *AND)
 {
-  int EntradasX[2];
+  double EntradasX[2];
   printf("Ingrese A\n");
-  scanf(" %d",&EntradasX[0]);
+  scanf(" %lf",&EntradasX[0]);
   printf("Ingrese B\n");
-  scanf(" %d",&EntradasX[1]);
+  scanf(" %lf",&EntradasX[1]);
   printf("El resultado es: %lf\n", ObtenerForwardPass(AND,EntradasX));
 }
 void ResultadosOR(TipoNeurona *OR)
 {
-  int EntradasX[2];
+  double EntradasX[2];
   printf("Ingrese A\n");
-  scanf(" %d",&EntradasX[0]);
+  scanf(" %lf",&EntradasX[0]);
   printf("Ingrese B\n");
-  scanf(" %d",&EntradasX[1]);
+  scanf(" %lf",&EntradasX[1]);
+
 }
 void ResultadosNOT(TipoNeurona *NOT)
 {
-  int EntradasX;
+  double EntradasX;
   printf("Ingrese A\n");
-  scanf(" %d",&EntradasX);
+  scanf(" %lf",&EntradasX);
 }
 void ResultadosXOR(TipoNeurona *XOR)
 {
   printf("No se puede xddd\n");
 }
 
-double ObtenerForwardPass(TipoNeurona *Neurona, int EntradasX[])
+double ObtenerForwardPass(TipoNeurona *Neurona, double EntradasX[])
 {
   double Suma = 0;
   for(int i = 0; i < 2; i++)
