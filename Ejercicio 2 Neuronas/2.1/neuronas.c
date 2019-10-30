@@ -79,7 +79,7 @@ void Entrenamiento(TipoNeurona* Neurona, double Entradas[4][2], double Salidas[]
 {
   FILE *Archivo;
   Archivo = fopen(NombreArchivo, "wt");
-  double N = 0.01;
+  double N = 0.2;
   int Posicion = 0;
 
   for(int i = 0; i < 500; i++)
