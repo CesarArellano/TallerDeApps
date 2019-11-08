@@ -21,7 +21,7 @@ int main (void)
 {
   TipoNeurona NeuronaAND,NeuronaOR,NeuronaNOT,NeuronaXOR;
   int Opcion;
-  double EntradasAND_OR_XOR[6][2] = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1},{2,2},{3,3}};
+  double EntradasAND_OR_XOR[6][2] = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1},{1,1},{1,1}};
   double SalidasAND[6] = {-1, -1, -1, 1, 1,1};
   double SalidasOR[4] = {-1, 1, 1, 1}; 
   double EntradasNOT[2] = {-1, 1};
@@ -79,10 +79,10 @@ void Entrenamiento(TipoNeurona* Neurona, double Entradas[4][2], double Salidas[]
 {
   FILE *Archivo;
   Archivo = fopen(NombreArchivo, "wt");
-  double N = 0.2;
+  double N = 0.01;
   int Posicion = 0;
 
-  for(int i = 0; i < 500; i++)
+  for(int i = 0; i < 1000; i++)
     {
       if(Posicion == 6)
         Posicion = 0; 
@@ -107,7 +107,10 @@ void ResultadosAND(TipoNeurona *AND)
   scanf(" %lf",&EntradasX[0]);
   printf("Ingrese B\n");
   scanf(" %lf",&EntradasX[1]);
-  printf("El resultado es: %lf\n", ObtenerForwardPass(AND,EntradasX));
+  if(ObtenerForwardPass(AND,EntradasX) > 0)
+    printf("El resultado es: 1");
+  else
+    printf("El resultado es: 0");
 }
 void ResultadosOR(TipoNeurona *OR)
 {
