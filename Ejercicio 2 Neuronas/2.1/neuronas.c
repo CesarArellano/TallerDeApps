@@ -9,26 +9,27 @@ typedef struct Neuron
   int X[2];
 }TipoNeurona;
 
-void InicializarNeuronas(TipoNeurona *AND);
-void Entrenamiento(TipoNeurona* Neurona, double Entradas[4][2], double Salidas[], char NombreArchivo[]);
-double ObtenerForwardPass(TipoNeurona *AND, double EntradasX[]);
-void ResultadosAND(TipoNeurona *AND);
-void ResultadosOR(TipoNeurona *OR);
-void ResultadosNOT(TipoNeurona *NOT);
-void ResultadosXOR(TipoNeurona *XOR);
+void InicializarNeuronasAND_OR(TipoNeurona *Neurona);
+void InicializarNeuronasNOT(TipoNeurona *Neurona);
+void EntrenamientoAND_OR(TipoNeurona* Neurona, double Datos[4][3], char NombreArchivo[]);
+void EntrenamientoNOT(TipoNeurona* Neurona, double Datos[2][2], char NombreArchivo[]);
+double ObtenerForwardPass(TipoNeurona *Neurona, double EntradasX[], int Tipo);
+void Resultados(TipoNeurona *AND, int Tipo);
+int Verificacion(double Resultado);
 
 int main (void)
 {
-  TipoNeurona NeuronaAND,NeuronaOR,NeuronaNOT,NeuronaXOR;
+  TipoNeurona NeuronaAND,NeuronaOR,NeuronaNOT;
   int Opcion;
-  double EntradasAND_OR_XOR[6][2] = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1},{1,1},{1,1}};
-  double SalidasAND[6] = {-1, -1, -1, 1, 1,1};
-  double SalidasOR[4] = {-1, 1, 1, 1}; 
-  double EntradasNOT[2] = {-1, 1};
-  double SalidadNOT[2] = {1, -1};
-    
-  InicializarNeuronas(&NeuronaAND);
-  Entrenamiento(&NeuronaAND,EntradasAND_OR_XOR,SalidasAND,"NeuronaAND.txt");
+  double DatosAND[4][3] = {{-1, -1, -1}, {-1, 1, -1}, {1, -1, -1}, {1, 1, 1}};
+  double DatosOR[4][3] = {{-1, -1, -1}, {-1, 1, 1}, {1, -1, 1}, {1, 1, 1}};
+  double DatosNOT[2][2] = {{-1, 1}, {1, -1}};
+  InicializarNeuronasAND_OR(&NeuronaAND);
+  InicializarNeuronasAND_OR(&NeuronaOR);
+  InicializarNeuronasNOT(&NeuronaNOT);
+  EntrenamientoAND_OR(&NeuronaAND,DatosAND,"NeuronaAND.txt");
+  EntrenamientoAND_OR(&NeuronaOR,DatosOR,"NeuronaOR.txt");
+  EntrenamientoNOT(&NeuronaNOT,DatosNOT,"NeuronaNOT.txt");
   printf("\nEntrenamiento Finalizado.\nPresione Enter para continuar...\n");
   __fpurge(stdin);
   getchar();
@@ -46,13 +47,13 @@ int main (void)
     switch(Opcion)
   	{
     	case 1:
-    	  ResultadosAND(&NeuronaAND);
+    	  Resultados(&NeuronaAND,2);
     	  break;
     	case 2:
-    	  ResultadosOR(&NeuronaOR);
+    	  Resultados(&NeuronaOR,2);
     	  break;
     	case 3:
-    	  ResultadosNOT(&NeuronaNOT);
+    	  Resultados(&NeuronaNOT,1);
     	  break;
     	case 4:
     	  printf("Saliendo del programa...\n");
@@ -68,14 +69,20 @@ int main (void)
   }while(Opcion!=4);
 }
 
-void InicializarNeuronas(TipoNeurona *AND)
+void InicializarNeuronasAND_OR(TipoNeurona *Neurona)
 {
   srand48(time(NULL));
-  AND->W[0] = drand48();
-  AND->W[1] = drand48();
-  AND->Bias = drand48();
+  Neurona->W[0] = drand48();
+  Neurona->W[1] = drand48();
+  Neurona->Bias = drand48();
 }
-void Entrenamiento(TipoNeurona* Neurona, double Entradas[4][2], double Salidas[], char NombreArchivo[])
+void InicializarNeuronasNOT(TipoNeurona *Neurona)
+{
+  srand48(time(NULL));
+  Neurona->W[0] = drand48();
+  Neurona->Bias = drand48();
+}
+void EntrenamientoAND_OR(TipoNeurona* Neurona, double Datos[4][3], char NombreArchivo[])
 {
   FILE *Archivo;
   Archivo = fopen(NombreArchivo, "wt");
@@ -84,14 +91,35 @@ void Entrenamiento(TipoNeurona* Neurona, double Entradas[4][2], double Salidas[]
 
   for(int i = 0; i < 1000; i++)
     {
-      if(Posicion == 6)
+      if(Posicion == 4)
         Posicion = 0; 
 
-      Neurona->Error = Salidas[Posicion] - ObtenerForwardPass(Neurona,Entradas[Posicion]);
+      Neurona->Error = Datos[Posicion][2] - ObtenerForwardPass(Neurona,Datos[Posicion],2);
       
       for(int j = 0 ; j < 2;j++)
-        Neurona->W[j] += N * Neurona->Error; 
+        Neurona->W[j] += N * Neurona->Error * Datos[Posicion][j]; 
 
+      Neurona->Bias += Neurona->Error * N;
+      fprintf(Archivo, "%lf, %lf, %lf\n", Neurona->W[0],Neurona->W[1],Neurona->Error);
+      Posicion++;
+    }   
+
+  fclose(Archivo);
+}
+
+void EntrenamientoNOT(TipoNeurona* Neurona, double Datos[2][2], char NombreArchivo[])
+{
+  FILE *Archivo;
+  Archivo = fopen(NombreArchivo, "wt");
+  double N = 0.01;
+  int Posicion = 0;
+
+  for(int i = 0; i < 1000; i++)
+    {
+      if(Posicion == 2)
+        Posicion = 0; 
+      Neurona->Error = Datos[Posicion][1] - ObtenerForwardPass(Neurona,Datos[Posicion],1);
+      Neurona->W[0] += N * Neurona->Error * Datos[Posicion][0]; 
       Neurona->Bias += Neurona->Error * N;
       fprintf(Archivo, "%lf, %lf\n", Neurona->W[0],Neurona->Error);
       Posicion++;
@@ -100,45 +128,41 @@ void Entrenamiento(TipoNeurona* Neurona, double Entradas[4][2], double Salidas[]
   fclose(Archivo);
 }
 
-void ResultadosAND(TipoNeurona *AND)
+void Resultados(TipoNeurona *Neurona, int Tipo)
 {
   double EntradasX[2];
-  printf("Ingrese A\n");
-  scanf(" %lf",&EntradasX[0]);
-  printf("Ingrese B\n");
-  scanf(" %lf",&EntradasX[1]);
-  if(ObtenerForwardPass(AND,EntradasX) > 0)
-    printf("El resultado es: 1");
+  if(Tipo == 2)
+  {
+    printf("Ingrese A\n");
+    scanf(" %lf",&EntradasX[0]);
+    printf("Ingrese B\n");
+    scanf(" %lf",&EntradasX[1]);
+    printf("El resultado es: %d", Verificacion(ObtenerForwardPass(Neurona,EntradasX,Tipo)));    
+  }
   else
-    printf("El resultado es: 0");
-}
-void ResultadosOR(TipoNeurona *OR)
-{
-  double EntradasX[2];
-  printf("Ingrese A\n");
-  scanf(" %lf",&EntradasX[0]);
-  printf("Ingrese B\n");
-  scanf(" %lf",&EntradasX[1]);
-
-}
-void ResultadosNOT(TipoNeurona *NOT)
-{
-  double EntradasX;
-  printf("Ingrese A\n");
-  scanf(" %lf",&EntradasX);
-}
-void ResultadosXOR(TipoNeurona *XOR)
-{
-  printf("No se puede xddd\n");
+  {
+    printf("Ingrese A\n");
+    scanf(" %lf",&EntradasX[0]);
+    printf("El resultado es: %d", Verificacion(ObtenerForwardPass(Neurona,EntradasX,Tipo)));
+  }
+  
 }
 
-double ObtenerForwardPass(TipoNeurona *Neurona, double EntradasX[])
+double ObtenerForwardPass(TipoNeurona *Neurona, double EntradasX[], int Tipo)
 {
   double Suma = 0;
-  for(int i = 0; i < 2; i++)
+  for(int i = 0; i < Tipo; i++)
     Suma += EntradasX[i] * Neurona->W[i];
   Suma += Neurona->Bias;
   return Suma; 
+}
+
+int Verificacion(double Resultado)
+{
+  if(Resultado < 0)
+    return -1;
+  else
+    return 1;
 }
 
 /*
