@@ -11,7 +11,7 @@
 #include <string.h>
 #include <time.h>
 
-// DEFINIENDO LA ESTRUCTURA DE CADA NEURONAO
+// DEFINIENDO LA ESTRUCTURA DE CADA NEURONA
 typedef struct Neuron
 {
   double W[2],Bias,Error;
@@ -46,7 +46,7 @@ int main (void)
   do
   {
     system("clear");
-    printf("Menú Implementacion de generador de gráfos\n");
+    printf("Menú Compuertas Lógicas\n");
     printf("1.- AND\n");
     printf("2.- OR\n");
     printf("3.- NOT\n");
